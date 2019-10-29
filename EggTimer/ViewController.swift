@@ -10,6 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var progressBar: UIProgressView!
     @IBOutlet weak var mainLabel: UILabel!
     let eggTimes = [
         // in seconds
@@ -17,14 +18,20 @@ class ViewController: UIViewController {
         "Medium": 4,
         "Hard": 7
     ]
-    var remainingSeconds = 0
+   
+    var secondsPassed = 0
+    var totalTime = 0
     var timer = Timer()
     
     // handles the eggs being pressed
     @IBAction func eggPressed(_ sender: UIButton) {
+        progressBar.progress = 0.0
+        secondsPassed = 0
+        mainLabel.text = "Eggs cooking.."
+        
         let hardness = sender.currentTitle!
         timer.invalidate()
-        remainingSeconds = eggTimes[hardness]!
+        totalTime = eggTimes[hardness]!
         startTimer(seconds: eggTimes[hardness]!)
     }
     
@@ -37,11 +44,15 @@ class ViewController: UIViewController {
     
     // update the timer time
     @objc func timerCallback(){
-        if remainingSeconds > 0 {
-            print("\(remainingSeconds) seconds.")
-            remainingSeconds -= 1
+        
+        if secondsPassed < totalTime {
+            let percentageProgress = Float(secondsPassed) / Float(totalTime)
+            secondsPassed += 1
+            
+            progressBar.progress = percentageProgress
         }else{
             timer.invalidate()
+            progressBar.progress = 1.0
             mainLabel.text = "DONE!"
         }
     }
